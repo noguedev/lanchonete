@@ -7,5 +7,6 @@ app.listen({ port: env.PORT }, (err, adress) => {
     process.exit(1)
   }
 
-  console.log('🚀 Server is running!')
+  console.log(`🚀 Server is running! Use in: http://localhost:3000/`)
+  console.log(`📚 Api documentation in: http://localhost:3000/documentation`)
 });
