@@ -1,0 +1,10 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: lanchonete-postgres
+    environment:
+      POSTGRES_USER: lanchonete
+      POSTGRES_PASSWORD: lanchonte
+      POSTGRES_DB: lanchonete
+    ports:
+      - "5432:5432"
