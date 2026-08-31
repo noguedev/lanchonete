@@ -46,3 +46,23 @@ export const userTable = pgTable(
     }),
   }),
 );
+
+export const refreshTokenTable = pgTable("refresh_tokens", {
+  id: uuid("id").primaryKey().defaultRandom(),
+
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => userTable.id, { onDelete: "cascade" }),
+
+  tokenHash: varchar("token_hash", { length: 255 }).unique().notNull(),
+
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+
+  revokedAt: timestamp("revoked_at", { withTimezone: true }),
+
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+
+  userAgent: varchar("user_agent", { length: 255 }),
+
+  ipAddress: varchar("ip_address", { length: 45 }),
+});

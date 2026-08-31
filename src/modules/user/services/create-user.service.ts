@@ -1,4 +1,4 @@
-import type { PasswordHash } from "../../auth/password.hash.service.js";
+import type { PasswordHash } from "../../auth/services/password-hash.service.js";
 import { EmailOrPasswordException } from "../exceptions/email-or-password.exception.js";
 import type { CreateUserDTO } from "../user.dto.js";
 import { UserRepository } from "../user.repository.js";

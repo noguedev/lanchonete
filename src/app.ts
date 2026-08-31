@@ -1,5 +1,6 @@
 import fastifySwagger from "@fastify/swagger";
 import { userRoutes } from "./modules/user/user.routes.js";
+import { authRoutes } from "./modules/auth/auth.routes.js";
 import {
   serializerCompiler,
   validatorCompiler,
@@ -8,6 +9,9 @@ import {
 
 import Fastify from "fastify";
 import fastifySwaggerUi from "@fastify/swagger-ui";
+import jwt from "./plugins/jwt.js";
+import cookie from "./plugins/cookie.js";
+import { errorHandler } from "./filter/error-handle.js";
 
 export const app = Fastify({
   logger: true,
@@ -15,6 +19,7 @@ export const app = Fastify({
 
 app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
+app.setErrorHandler(errorHandler);
 
 app.register(fastifySwagger, {
   openapi: {
@@ -28,9 +33,18 @@ app.register(fastifySwagger, {
   transform: jsonSchemaTransform
 });
 
+
+app.register(jwt);
+app.register(cookie);
+
+// Pages 
 app.register(fastifySwaggerUi, {
   routePrefix: "/documentation",
 });
+
+app.register(authRoutes, {
+  prefix: "/auth"
+})
 
 app.register(userRoutes, {
   prefix: "/users",

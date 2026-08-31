@@ -1,1 +1,1 @@
-export * from './user.factory.js'
+export * from './create-user-service.factory.js'

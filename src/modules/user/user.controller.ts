@@ -1,10 +1,10 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 
-import { makeUserService } from "./factories/user.factory.js";
+import { makeCreateUserService } from "./factories/create-user-service.factory.js";
 import type { CreateUserDTO } from "./user.dto.js";
 
 export class UserController {
-  private readonly createUserService = makeUserService();
+  private readonly createUserService = makeCreateUserService();
 
   async create(
     request: FastifyRequest<{
