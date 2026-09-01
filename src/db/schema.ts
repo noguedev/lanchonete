@@ -3,6 +3,7 @@ import {
   foreignKey,
   pgEnum,
   pgTable,
+  text,
   timestamp,
   uuid,
   varchar,
@@ -65,4 +66,20 @@ export const refreshTokenTable = pgTable("refresh_tokens", {
   userAgent: varchar("user_agent", { length: 255 }),
 
   ipAddress: varchar("ip_address", { length: 45 }),
+});
+
+export const categoryTable = pgTable("categories", {
+  id: uuid("id").primaryKey().defaultRandom(),
+
+  name: varchar("name", { length: 100 }).notNull(),
+
+  slug: varchar("slug", { length: 100 }).unique().notNull(),
+
+  description: text("description"),
+
+  isActive: boolean("is_active").notNull().default(true),
+
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+
+  updatedAt: timestamp("updated_at", { withTimezone: true }),
 });

@@ -1,6 +1,7 @@
 import fastifySwagger from "@fastify/swagger";
 import { userRoutes } from "./modules/user/user.routes.js";
 import { authRoutes } from "./modules/auth/auth.routes.js";
+import { categoryRoutes } from "./modules/category/category.routes.js";
 import {
   serializerCompiler,
   validatorCompiler,
@@ -29,6 +30,20 @@ app.register(fastifySwagger, {
       description: "Api para gerenciamento de pedidos para uma lanchonete",
       version: "0.0.1",
     },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+        refreshTokenCookie: {
+          type: 'apiKey',
+          in: 'cookie',
+          name: 'refresh_token'
+        }
+      },
+    },
   },
   transform: jsonSchemaTransform
 });
@@ -48,6 +63,10 @@ app.register(authRoutes, {
 
 app.register(userRoutes, {
   prefix: "/users",
+});
+
+app.register(categoryRoutes, {
+  prefix: "/categories",
 });
 
 
