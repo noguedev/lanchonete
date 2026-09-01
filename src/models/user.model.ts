@@ -3,8 +3,10 @@ import type {
   InferSelectModel,
 } from "drizzle-orm";
 
-import { userTable } from "../db/schema.js";
+import { roleEnum, userTable } from "../db/schema.js";
 
 export type User = InferSelectModel<typeof userTable>;
 
 export type UserInsert = InferInsertModel<typeof userTable>;
+
+export type UserRole = (typeof roleEnum.enumValues)[number];

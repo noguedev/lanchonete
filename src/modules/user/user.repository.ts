@@ -17,4 +17,14 @@ export class UserRepository {
 
       return user;
   }
+
+  async findById(id: string) {
+    const [user] = await db
+      .select()
+      .from(userTable)
+      .where(eq(userTable.id, id))
+      .limit(1);
+
+    return user;
+  }
 }

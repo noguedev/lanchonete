@@ -1,4 +1,4 @@
-import { and, eq, isNull } from "drizzle-orm";
+import { and, eq, gt, isNull } from "drizzle-orm";
 
 import { db } from "../../db/index.js";
 import { refreshTokenTable } from "../../db/schema.js";
@@ -35,6 +35,19 @@ export class RefreshTokenRepository {
         and(
           eq(refreshTokenTable.userId, userId),
           isNull(refreshTokenTable.revokedAt),
+          gt(refreshTokenTable.expiresAt, new Date()),
+        ),
+      );
+  }
+
+  async findActive(): Promise<RefreshToken[]> {
+    return db
+      .select()
+      .from(refreshTokenTable)
+      .where(
+        and(
+          isNull(refreshTokenTable.revokedAt),
+          gt(refreshTokenTable.expiresAt, new Date()),
         ),
       );
   }
@@ -46,3 +59,4 @@ export class RefreshTokenRepository {
       .where(eq(refreshTokenTable.id, refreshTokenId));
   }
 }
+
