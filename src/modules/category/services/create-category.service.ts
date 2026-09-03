@@ -7,7 +7,7 @@ export class CreateCategoryService {
   constructor(private readonly categoryRepository: CategoryRepository) {}
 
   async execute(data: CreateCategoryDTO) {
-    const slug = data.slug ?? slugify(data.name);
+    const slug = slugify(data.name);
 
     const existing = await this.categoryRepository.findBySlug(slug);
 

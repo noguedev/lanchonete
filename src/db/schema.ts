@@ -1,6 +1,7 @@
 import {
   boolean,
   foreignKey,
+  numeric,
   pgEnum,
   pgTable,
   text,
@@ -76,6 +77,32 @@ export const categoryTable = pgTable("categories", {
   slug: varchar("slug", { length: 100 }).unique().notNull(),
 
   description: text("description"),
+
+  isActive: boolean("is_active").notNull().default(true),
+
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+
+  updatedAt: timestamp("updated_at", { withTimezone: true }),
+});
+
+export const productTable = pgTable("products", {
+  id: uuid("id").primaryKey().defaultRandom(),
+
+  categoryId: uuid("category_id")
+    .notNull()
+    .references(() => categoryTable.id, { onDelete: "cascade" }),
+
+  name: varchar("name", { length: 100 }).notNull(),
+
+  slug: varchar("slug", { length: 100 }).unique().notNull(),
+
+  description: text("description"),
+
+  price: numeric("price", { precision: 10, scale: 2 }).notNull(),
+
+  imageUrl: varchar("image_url", { length: 255 }),
+
+  isAvailable: boolean("is_available").notNull().default(true),
 
   isActive: boolean("is_active").notNull().default(true),
 

@@ -50,14 +50,14 @@ describe("CreateCategoryService", () => {
     });
   });
 
-  it("uses the provided slug instead of generating one", async () => {
+  it("normalizes spaces and accents into a hyphenated slug", async () => {
     findBySlug.mockResolvedValue(undefined);
     create.mockResolvedValue(fakeCategory());
 
-    await service.execute({ name: "Lanches", slug: "lanches-artesanais" });
+    await service.execute({ name: "  Pastel Doce!  " });
 
     expect(create).toHaveBeenCalledWith(
-      expect.objectContaining({ slug: "lanches-artesanais" }),
+      expect.objectContaining({ slug: "pastel-doce" }),
     );
   });
 
