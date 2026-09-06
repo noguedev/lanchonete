@@ -3,6 +3,7 @@ import { userRoutes } from "./modules/user/user.routes.js";
 import { authRoutes } from "./modules/auth/auth.routes.js";
 import { categoryRoutes } from "./modules/category/category.routes.js";
 import { productRoutes } from "./modules/product/product.routes.js";
+import { addressRoutes } from "./modules/address/address.routes.js";
 import {
   serializerCompiler,
   validatorCompiler,
@@ -86,6 +87,10 @@ app.register(categoryRoutes, {
 
 app.register(productRoutes, {
   prefix: "/products",
+});
+
+app.register(addressRoutes, {
+  prefix: "/addresses",
 });
 
 

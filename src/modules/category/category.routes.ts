@@ -38,9 +38,7 @@ export async function categoryRoutes(fastify: FastifyInstance) {
         security: [{ bearerAuth: [] }],
         body: createCategorySchema,
         response: {
-          201: z.object({
-            category: categoryResponseSchema,
-          }),
+          201: z.null(),
           400: httpErrorSchema,
           401: httpErrorSchema,
           403: httpErrorSchema,

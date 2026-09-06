@@ -9,3 +9,5 @@ export * from './refresh-token.model.js'
 export * from './category.model.js'
 
 export * from './product.model.js'
+
+export * from './address.model.js'

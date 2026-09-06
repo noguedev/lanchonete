@@ -49,13 +49,9 @@ export class CategoryController {
   private readonly listCategoriesService = makeListCategoriesService();
 
   async create(request: FastifyRequest, reply: FastifyReply) {
-    const category = await this.createCategoryService.execute(
-      request.body as CreateCategoryDTO,
-    );
+    await this.createCategoryService.execute(request.body as CreateCategoryDTO);
 
-    return reply
-      .status(201)
-      .send({ category: toCategoryResponse(requireCategory(category)) });
+    return reply.status(201).send();
   }
 
   async update(request: FastifyRequest, reply: FastifyReply) {

@@ -110,3 +110,37 @@ export const productTable = pgTable("products", {
 
   updatedAt: timestamp("updated_at", { withTimezone: true }),
 });
+
+export const addressTable = pgTable("addresses", {
+  id: uuid("id").primaryKey().defaultRandom(),
+
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => userTable.id, { onDelete: "cascade" }),
+
+  label: varchar("label", { length: 50 }),
+
+  recipientName: varchar("recipient_name", { length: 100 }),
+
+  phone: varchar("phone", { length: 20 }),
+
+  street: varchar("street", { length: 150 }).notNull(),
+
+  number: varchar("number", { length: 20 }).notNull(),
+
+  complement: varchar("complement", { length: 100 }),
+
+  neighborhood: varchar("neighborhood", { length: 100 }),
+
+  city: varchar("city", { length: 100 }).notNull(),
+
+  state: varchar("state", { length: 2 }).notNull(),
+
+  postalCode: varchar("postal_code", { length: 10 }).notNull(),
+
+  isDefault: boolean("is_default").notNull().default(false),
+
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+
+  updatedAt: timestamp("updated_at", { withTimezone: true }),
+});
