@@ -4,6 +4,7 @@ import { authRoutes } from "./modules/auth/auth.routes.js";
 import { categoryRoutes } from "./modules/category/category.routes.js";
 import { productRoutes } from "./modules/product/product.routes.js";
 import { addressRoutes } from "./modules/address/address.routes.js";
+import { cartRoutes } from "./modules/cart/cart.routes.js";
 import {
   serializerCompiler,
   validatorCompiler,
@@ -105,6 +106,10 @@ app.register(productRoutes, {
 
 app.register(addressRoutes, {
   prefix: "/addresses",
+});
+
+app.register(cartRoutes, {
+  prefix: "/cart",
 });
 
 

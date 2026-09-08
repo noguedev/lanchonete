@@ -1,11 +1,13 @@
 import {
   boolean,
   foreignKey,
+  integer,
   numeric,
   pgEnum,
   pgTable,
   text,
   timestamp,
+  uniqueIndex,
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
@@ -144,3 +146,45 @@ export const addressTable = pgTable("addresses", {
 
   updatedAt: timestamp("updated_at", { withTimezone: true }),
 });
+
+export const cartTable = pgTable("carts", {
+  id: uuid("id").primaryKey().defaultRandom(),
+
+  userId: uuid("user_id")
+    .notNull()
+    .unique()
+    .references(() => userTable.id, { onDelete: "cascade" }),
+
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+
+  updatedAt: timestamp("updated_at", { withTimezone: true }),
+});
+
+export const cartItemTable = pgTable(
+  "cart_items",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+
+    cartId: uuid("cart_id")
+      .notNull()
+      .references(() => cartTable.id, { onDelete: "cascade" }),
+
+    productId: uuid("product_id")
+      .notNull()
+      .references(() => productTable.id, { onDelete: "cascade" }),
+
+    quantity: integer("quantity").notNull().default(1),
+
+    unitPrice: numeric("unit_price", { precision: 10, scale: 2 }).notNull(),
+
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+
+    updatedAt: timestamp("updated_at", { withTimezone: true }),
+  },
+  (table) => ({
+    uniqueCartProduct: uniqueIndex("cart_items_cart_product_unique").on(
+      table.cartId,
+      table.productId,
+    ),
+  }),
+);
