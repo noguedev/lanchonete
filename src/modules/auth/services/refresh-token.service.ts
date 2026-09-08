@@ -1,5 +1,6 @@
 import { env } from "../../../env/env.js";
 import { InvalidRefreshTokenException } from "../exceptions/invalid-refresh-token.exception.js";
+import { AccountDisabledException } from "../exceptions/account-disabled.exception.js";
 import type { RefreshTokenRepository } from "../refresh-token.repository.js";
 import type { JwtAndTokenRefresh } from "../types/jwt-and-token-refresh.js";
 import type { RefreshToken, User } from "../../../models/index.js";
@@ -54,6 +55,10 @@ export class RefreshTokenService {
 
     if (!user) {
       throw new InvalidRefreshTokenException();
+    }
+
+    if (!user.isActive || user.isBanned) {
+      throw new AccountDisabledException();
     }
 
     await this.refreshTokenRepository.revoke(matchedToken.id);

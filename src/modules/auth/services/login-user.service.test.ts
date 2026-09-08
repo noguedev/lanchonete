@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { LoginUserService } from "./login-user.service.js";
 import { EmailOrPasswordException } from "../../user/exceptions/email-or-password.exception.js";
+import { AccountDisabledException } from "../exceptions/account-disabled.exception.js";
 import type { UserRepository } from "../../user/user.repository.js";
 import type { JwtService } from "./jwt.service.js";
 import type { PasswordHash } from "./password-hash.service.js";
@@ -136,5 +137,23 @@ describe("LoginUserService", () => {
     await service.execute(validCredentials);
 
     expect(generateAccessToken).toHaveBeenCalledWith({ id: "u1", role: "ADMIN" });
+  });
+
+  it("throws AccountDisabledException when the user is banned", async () => {
+    findByEmail.mockResolvedValue([{ ...fakeUser(), isBanned: true }]);
+    validade.mockResolvedValue(true);
+
+    await expect(service.execute(validCredentials)).rejects.toBeInstanceOf(
+      AccountDisabledException,
+    );
+  });
+
+  it("throws AccountDisabledException when the user is inactive", async () => {
+    findByEmail.mockResolvedValue([{ ...fakeUser(), isActive: false }]);
+    validade.mockResolvedValue(true);
+
+    await expect(service.execute(validCredentials)).rejects.toBeInstanceOf(
+      AccountDisabledException,
+    );
   });
 });

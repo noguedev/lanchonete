@@ -1,4 +1,5 @@
 import { EmailOrPasswordException } from "../../user/exceptions/email-or-password.exception.js";
+import { AccountDisabledException } from "../exceptions/account-disabled.exception.js";
 import type { UserRepository } from "../../user/user.repository.js";
 import type { LoginUserDto } from "../auth.dtos.js";
 import type { JwtAndTokenRefresh } from "../types/jwt-and-token-refresh.js";
@@ -35,6 +36,10 @@ export class LoginUserService {
     }
 
     const user = userExists[0]!;
+
+    if (!user.isActive || user.isBanned) {
+      throw new AccountDisabledException();
+    }
 
     const acessToken = await this.jwtService.generateAccessToken({
       id: user.id,

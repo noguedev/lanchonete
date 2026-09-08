@@ -8,7 +8,7 @@ export const createUserSchema = z.object({
 
   email: z.email("Informe um endereço de email válido."),
 
-  // TODO validate phone
+  //TODO: validate phone
   phone: z
     .string()
     .max(20, "O telefone deve possuir no máximo 20 caracteres.")

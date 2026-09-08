@@ -10,6 +10,9 @@ export async function authRoutes(fastify: FastifyInstance) {
   fastify.post(
     "/login",
     {
+      config: {
+        rateLimit: { max: 5, timeWindow: "1 minute" },
+      },
       schema: {
         tags: ["Auth"],
         summary: "Loga o usuário no sistema",
@@ -32,6 +35,9 @@ export async function authRoutes(fastify: FastifyInstance) {
   fastify.post(
     "/refresh",
     {
+      config: {
+        rateLimit: { max: 5, timeWindow: "1 minute" },
+      },
       schema: {
         tags: ["Auth"],
         summary: "Renova a sessão do usuário",

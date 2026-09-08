@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { RefreshTokenService } from "./refresh-token.service.js";
 import { InvalidRefreshTokenException } from "../exceptions/invalid-refresh-token.exception.js";
+import { AccountDisabledException } from "../exceptions/account-disabled.exception.js";
 import type { RefreshTokenRepository } from "../refresh-token.repository.js";
 import type { UserRepository } from "../../user/user.repository.js";
 import type { JwtService } from "./jwt.service.js";
@@ -170,6 +171,26 @@ describe("RefreshTokenService", () => {
       await service.refresh("raw");
 
       expect(revoke).toHaveBeenCalledWith("rt2");
+    });
+
+    it("throws AccountDisabledException when the user is banned", async () => {
+      findActive.mockResolvedValue([fakeToken()]);
+      validade.mockResolvedValue(true);
+      findById.mockResolvedValue({ ...fakeUser(), isBanned: true });
+
+      await expect(service.refresh("raw")).rejects.toBeInstanceOf(
+        AccountDisabledException,
+      );
+    });
+
+    it("throws AccountDisabledException when the user is inactive", async () => {
+      findActive.mockResolvedValue([fakeToken()]);
+      validade.mockResolvedValue(true);
+      findById.mockResolvedValue({ ...fakeUser(), isActive: false });
+
+      await expect(service.refresh("raw")).rejects.toBeInstanceOf(
+        AccountDisabledException,
+      );
     });
   });
 });

@@ -4,7 +4,7 @@ services:
     container_name: lanchonete-postgres
     environment:
       POSTGRES_USER: lanchonete
-      POSTGRES_PASSWORD: lanchonte
+      POSTGRES_PASSWORD: lanchonete
       POSTGRES_DB: lanchonete
     ports:
       - "5432:5432"

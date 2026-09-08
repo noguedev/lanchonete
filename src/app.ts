@@ -14,10 +14,13 @@ import Fastify from "fastify";
 import fastifySwaggerUi from "@fastify/swagger-ui";
 import fastifyStatic from "@fastify/static";
 import fastifyMultipart from "@fastify/multipart";
+import fastifyCors from "@fastify/cors";
+import fastifyRateLimit from "@fastify/rate-limit";
 import jwt from "./plugins/jwt.js";
 import cookie from "./plugins/cookie.js";
 import { errorHandler } from "./filter/error-handle.js";
 import { UPLOADS_DIR, MAX_IMAGE_SIZE_BYTES } from "./config/storage.js";
+import { env } from "./env/env.js";
 import fs from "node:fs";
 
 export const app = Fastify({
@@ -57,6 +60,17 @@ app.register(fastifySwagger, {
 
 app.register(jwt);
 app.register(cookie);
+
+app.register(fastifyCors, {
+  origin: env.CORS_ORIGIN === "*" ? true : env.CORS_ORIGIN.split(","),
+  credentials: true,
+});
+
+app.register(fastifyRateLimit, {
+  max: 100,
+  timeWindow: "1 minute",
+});
+
 app.register(fastifyMultipart, {
   limits: { files: 1, fileSize: MAX_IMAGE_SIZE_BYTES },
 });
