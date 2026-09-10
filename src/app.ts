@@ -63,8 +63,11 @@ app.register(jwt);
 app.register(cookie);
 
 app.register(fastifyCors, {
-  origin: env.CORS_ORIGIN === "*" ? true : env.CORS_ORIGIN.split(","),
-  credentials: true,
+  origin:
+    env.CORS_ORIGIN === "*"
+      ? true
+      : env.CORS_ORIGIN.split(",").map((origin) => origin.trim()),
+  credentials: env.CORS_ORIGIN !== "*",
 });
 
 app.register(fastifyRateLimit, {

@@ -1,5 +1,7 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { AppError } from "../../models/exception-base.js";
+import { env } from "../../env/env.js";
+import { UnauthorizedException } from "./exceptions/unauthorized.exception.js";
 import type { LoginUserService } from "./services/login-user.service.js";
 import type { RefreshTokenService } from "./services/refresh-token.service.js";
 import type { LoginUserDto } from "./auth.dtos.js";
@@ -10,6 +12,7 @@ const REFRESH_COOKIE_OPTIONS = {
   httpOnly: true,
   sameSite: "lax",
   path: "/",
+  secure: env.NODE_ENV === "production",
 } as const;
 
 export class AuthController {
@@ -29,10 +32,10 @@ export class AuthController {
       this.extractContext(request),
     );
 
-    reply.setCookie(REFRESH_COOKIE, result.TokenRefresh, REFRESH_COOKIE_OPTIONS);
+    reply.setCookie(REFRESH_COOKIE, result.refreshToken, REFRESH_COOKIE_OPTIONS);
 
-    return reply.status(201).send({
-      acessToken: result.JwtToken,
+    return reply.status(200).send({
+      accessToken: result.accessToken,
     });
   }
 
@@ -43,10 +46,10 @@ export class AuthController {
         this.extractContext(request),
       );
 
-      reply.setCookie(REFRESH_COOKIE, result.TokenRefresh, REFRESH_COOKIE_OPTIONS);
+      reply.setCookie(REFRESH_COOKIE, result.refreshToken, REFRESH_COOKIE_OPTIONS);
 
       return reply.status(200).send({
-        acessToken: result.JwtToken,
+        accessToken: result.accessToken,
       });
     } catch (error) {
       if (error instanceof AppError) {
@@ -55,6 +58,34 @@ export class AuthController {
 
       throw error;
     }
+  }
+
+  async me(request: FastifyRequest, reply: FastifyReply) {
+    const user = request.currentUser;
+
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    return reply.status(200).send({
+      user: {
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  }
+
+  async logout(request: FastifyRequest, reply: FastifyReply) {
+    await this.refreshTokenService.revokeByRawToken(
+      request.cookies[REFRESH_COOKIE],
+    );
+
+    reply.clearCookie(REFRESH_COOKIE, { path: "/" });
+
+    return reply.status(200).send({
+      message: "Sessão encerrada",
+    });
   }
 
   private extractContext(request: FastifyRequest) {

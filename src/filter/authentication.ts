@@ -21,4 +21,6 @@ export async function authenticate(request: FastifyRequest) {
   if (!user.isActive || user.isBanned) {
     throw new AccountDisabledException();
   }
+
+  request.currentUser = user;
 }

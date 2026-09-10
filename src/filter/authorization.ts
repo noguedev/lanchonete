@@ -5,9 +5,9 @@ import type { UserRole } from "../models/index.js";
 
 export function authorize(...allowedRoles: UserRole[]) {
   return async (request: FastifyRequest) => {
-    const user = request.user;
+    const role = request.currentUser?.role;
 
-    if (!user || !allowedRoles.includes(user.role)) {
+    if (!role || !allowedRoles.includes(role)) {
       throw new ForbiddenException();
     }
   };

@@ -17,39 +17,22 @@ export class RefreshTokenRepository {
     return token;
   }
 
-  async findByHash(tokenHash: string): Promise<RefreshToken | undefined> {
+  async findActiveByHash(
+    tokenHash: string,
+  ): Promise<RefreshToken | undefined> {
     const [token] = await db
       .select()
       .from(refreshTokenTable)
-      .where(eq(refreshTokenTable.tokenHash, tokenHash))
+      .where(
+        and(
+          eq(refreshTokenTable.tokenHash, tokenHash),
+          isNull(refreshTokenTable.revokedAt),
+          gt(refreshTokenTable.expiresAt, new Date()),
+        ),
+      )
       .limit(1);
 
     return token;
-  }
-
-  async findActiveByUserId(userId: string): Promise<RefreshToken[]> {
-    return db
-      .select()
-      .from(refreshTokenTable)
-      .where(
-        and(
-          eq(refreshTokenTable.userId, userId),
-          isNull(refreshTokenTable.revokedAt),
-          gt(refreshTokenTable.expiresAt, new Date()),
-        ),
-      );
-  }
-
-  async findActive(): Promise<RefreshToken[]> {
-    return db
-      .select()
-      .from(refreshTokenTable)
-      .where(
-        and(
-          isNull(refreshTokenTable.revokedAt),
-          gt(refreshTokenTable.expiresAt, new Date()),
-        ),
-      );
   }
 
   async revoke(refreshTokenId: string): Promise<void> {
@@ -59,4 +42,3 @@ export class RefreshTokenRepository {
       .where(eq(refreshTokenTable.id, refreshTokenId));
   }
 }
-

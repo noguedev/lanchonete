@@ -1,7 +1,7 @@
 import { app } from "./app.js";
 import { env } from "./env/env.js";
 
-app.listen({ port: env.PORT }, (err, adress) => {
+app.listen({ port: env.PORT }, (err, address) => {
   if (err) {
     app.log.error(err)
     process.exit(1)

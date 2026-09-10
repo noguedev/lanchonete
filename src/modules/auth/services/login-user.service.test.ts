@@ -33,7 +33,7 @@ describe("LoginUserService", () => {
   let findByEmail: ReturnType<typeof vi.fn>;
   let generateAccessToken: ReturnType<typeof vi.fn>;
   let generateRefreshToken: ReturnType<typeof vi.fn>;
-  let validade: ReturnType<typeof vi.fn>;
+  let validate: ReturnType<typeof vi.fn>;
   let issueToken: ReturnType<typeof vi.fn>;
   let refresh: ReturnType<typeof vi.fn>;
   let service: LoginUserService;
@@ -42,7 +42,7 @@ describe("LoginUserService", () => {
     findByEmail = vi.fn();
     generateAccessToken = vi.fn().mockResolvedValue("access-token");
     generateRefreshToken = vi.fn().mockReturnValue("raw-refresh");
-    validade = vi.fn();
+    validate = vi.fn();
     issueToken = vi.fn().mockResolvedValue("raw-refresh");
     refresh = vi.fn();
 
@@ -59,7 +59,7 @@ describe("LoginUserService", () => {
 
     const passwordHasher = {
       hash: vi.fn(),
-      validade,
+      validate,
     } as unknown as PasswordHash;
 
     const refreshTokenService = {
@@ -85,7 +85,7 @@ describe("LoginUserService", () => {
 
   it("throws EmailOrPasswordException when the password is wrong", async () => {
     findByEmail.mockResolvedValue([fakeUser()]);
-    validade.mockResolvedValue(false);
+    validate.mockResolvedValue(false);
 
     await expect(service.execute(validCredentials)).rejects.toBeInstanceOf(
       EmailOrPasswordException,
@@ -102,20 +102,20 @@ describe("LoginUserService", () => {
 
   it("returns the token pair and issues the refresh token on success", async () => {
     findByEmail.mockResolvedValue([fakeUser()]);
-    validade.mockResolvedValue(true);
+    validate.mockResolvedValue(true);
 
     const result = await service.execute(validCredentials, {
       ipAddress: "127.0.0.1",
     });
 
-    expect(result).toEqual({ JwtToken: "access-token", TokenRefresh: "raw-refresh" });
+    expect(result).toEqual({ accessToken: "access-token", refreshToken: "raw-refresh" });
     expect(generateAccessToken).toHaveBeenCalledWith({ id: "u1", role: "CUSTOMER" });
     expect(issueToken).toHaveBeenCalledWith("u1", { ipAddress: "127.0.0.1" });
   });
 
   it("forwards the context (userAgent/ip) to token issuance", async () => {
     findByEmail.mockResolvedValue([fakeUser()]);
-    validade.mockResolvedValue(true);
+    validate.mockResolvedValue(true);
 
     await service.execute(validCredentials, {
       userAgent: "vitest/1.0",
@@ -132,7 +132,7 @@ describe("LoginUserService", () => {
     findByEmail.mockResolvedValue([
       { ...fakeUser(), role: "ADMIN" as const },
     ]);
-    validade.mockResolvedValue(true);
+    validate.mockResolvedValue(true);
 
     await service.execute(validCredentials);
 
@@ -141,7 +141,7 @@ describe("LoginUserService", () => {
 
   it("throws AccountDisabledException when the user is banned", async () => {
     findByEmail.mockResolvedValue([{ ...fakeUser(), isBanned: true }]);
-    validade.mockResolvedValue(true);
+    validate.mockResolvedValue(true);
 
     await expect(service.execute(validCredentials)).rejects.toBeInstanceOf(
       AccountDisabledException,
@@ -150,7 +150,7 @@ describe("LoginUserService", () => {
 
   it("throws AccountDisabledException when the user is inactive", async () => {
     findByEmail.mockResolvedValue([{ ...fakeUser(), isActive: false }]);
-    validade.mockResolvedValue(true);
+    validate.mockResolvedValue(true);
 
     await expect(service.execute(validCredentials)).rejects.toBeInstanceOf(
       AccountDisabledException,

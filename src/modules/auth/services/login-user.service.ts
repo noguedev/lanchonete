@@ -2,11 +2,11 @@ import { EmailOrPasswordException } from "../../user/exceptions/email-or-passwor
 import { AccountDisabledException } from "../exceptions/account-disabled.exception.js";
 import type { UserRepository } from "../../user/user.repository.js";
 import type { LoginUserDto } from "../auth.dtos.js";
-import type { JwtAndTokenRefresh } from "../types/jwt-and-token-refresh.js";
+import type { AuthTokens } from "../types/auth-tokens.js";
 import type { JwtService } from "./jwt.service.js";
 import type { PasswordHash } from "./password-hash.service.js";
 import type { RefreshTokenService } from "./refresh-token.service.js";
-import type { RefreshContext } from './../types/index.js'
+import type { RefreshContext } from "../types/refresh-context.js";
 
 export class LoginUserService {
   constructor(
@@ -19,14 +19,14 @@ export class LoginUserService {
   async execute(
     data: LoginUserDto,
     context: RefreshContext = {},
-  ): Promise<JwtAndTokenRefresh> {
+  ): Promise<AuthTokens> {
     const userExists = await this.userRepository.findByEmail(data.email);
 
     if (userExists.length <= 0) {
       throw new EmailOrPasswordException();
     }
 
-    const passwordMatches = await this.passwordHasherService.validade(
+    const passwordMatches = await this.passwordHasherService.validate(
       userExists[0]?.passwordHash!,
       data.password,
     );
@@ -41,7 +41,7 @@ export class LoginUserService {
       throw new AccountDisabledException();
     }
 
-    const acessToken = await this.jwtService.generateAccessToken({
+    const accessToken = await this.jwtService.generateAccessToken({
       id: user.id,
       role: user.role,
     });
@@ -52,8 +52,8 @@ export class LoginUserService {
     );
 
     return {
-      JwtToken: acessToken,
-      TokenRefresh: refreshToken,
+      accessToken,
+      refreshToken,
     };
   }
 }

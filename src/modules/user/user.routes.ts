@@ -26,6 +26,8 @@ export async function userRoutes(fastify: FastifyInstance) {
 
           401: httpErrorSchema,
 
+          409: httpErrorSchema,
+
           500: httpErrorSchema,
         },
       },

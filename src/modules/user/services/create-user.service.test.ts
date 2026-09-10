@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { CreateUserService } from "./create-user.service.js";
-import { EmailOrPasswordException } from "../exceptions/email-or-password.exception.js";
+import { EmailAlreadyExistsException } from "../exceptions/email-already-exists.exception.js";
 import type { UserRepository } from "../user.repository.js";
 import type { PasswordHash } from "../../auth/services/password-hash.service.js";
 import type { User } from "../../../models/index.js";
@@ -47,7 +47,7 @@ describe("CreateUserService", () => {
 
     const passwordHasher = {
       hash,
-      validade: vi.fn(),
+      validate: vi.fn(),
     } as unknown as PasswordHash;
 
     service = new CreateUserService(userRepository, passwordHasher);
@@ -71,11 +71,11 @@ describe("CreateUserService", () => {
     expect(result).toEqual(createdUser);
   });
 
-  it("throws EmailOrPasswordException when the email already exists", async () => {
+  it("throws EmailAlreadyExistsException when the email already exists", async () => {
     findByEmail.mockResolvedValue([fakeUser()]);
 
     await expect(service.execute(validData)).rejects.toBeInstanceOf(
-      EmailOrPasswordException,
+      EmailAlreadyExistsException,
     );
   });
 

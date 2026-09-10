@@ -1,1 +1,1 @@
-export * from './address-respose.js'
+export * from './address-response.js'
